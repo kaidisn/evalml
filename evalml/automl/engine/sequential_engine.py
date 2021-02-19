@@ -17,10 +17,12 @@ class SequentialEngine(EngineBase):
             raise ValueError("Dataset has not been loaded into the engine.")
         new_pipeline_ids = []
         index = 0
+        eval_results = []
         while self._should_continue_callback() and index < len(pipelines):
             pipeline = pipelines[index]
             self._pre_evaluation_callback(pipeline)
             evaluation_result = EngineBase.train_and_score_pipeline(pipeline, self.automl, self.X_train, self.y_train)
             new_pipeline_ids.append(self._post_evaluation_callback(pipeline, evaluation_result))
             index += 1
+            eval_results.append(evaluation_result)
         return new_pipeline_ids
