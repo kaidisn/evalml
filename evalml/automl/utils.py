@@ -88,14 +88,25 @@ def tune_binary_threshold(pipeline, objective, problem_type, X_threshold_tuning,
 
 
 def check_all_pipeline_names_unique(pipelines):
+    """Checks whether all the pipeline names are unique.
+
+    Arguments:
+        pipelines (list(PipelineBase)): List of pipelines to check if all names are unique.
+
+    Returns:
+          None
+
+    Raises:
+        ValueError if any pipeline names are duplicated.
+    """
     seen_names = set([])
     duplicate_names = set([])
 
     for pipeline in pipelines:
         if pipeline.name in seen_names:
-            duplicate_names.add(duplicate_names)
+            duplicate_names.add(pipeline.name)
         else:
             seen_names.add(pipeline.name)
 
     if duplicate_names:
-        raise ValueError(f"All pipeline names must be unique. The names {', '.join(duplicate_names)} we repeated.")
+        raise ValueError(f"All pipeline names must be unique. The names {', '.join(duplicate_names)} were repeated.")
