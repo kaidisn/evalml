@@ -8,6 +8,8 @@ Release Notes
         * Updated ``Woodwork`` requirement to ``v0.0.10`` :pr:`1900`
         * Added utility method to create list of components from a list of ``DataCheckAction`` :pr:`1907`
         * Aggregating the shap values for predictions that we know the provenance of, e.g. OHE, text, and date-time. :pr:`1901`
+        * Added ``score_batch`` and ``train_batch`` methods to ``AutoMLSearch`` :pr:`1913`
+        * Added ``score_batch`` and ``train_batch`` abstact methods to ``EngineBase`` and implementations in ``SequentialEngine`` :pr:`1913`
     * Fixes
         * Added metaclass for time series pipelines and fix binary classification pipeline ``predict`` not using objective if it is passed as a named argument :pr:`1874`
         * Fixed stack trace in prediction explanation functions caused by mixed string/numeric pandas column names :pr:`1871`
@@ -23,6 +25,7 @@ Release Notes
 
     **Breaking Changes**
         * Deleted the ``explain_prediction`` function :pr:`1915`
+        * Added ``score_batch`` and ``train_batch`` abstact methods to ``EngineBase``. These need to be implemented in Engine subclasses :pr:`1913`
 
 **v0.19.0 Feb. 23, 2021**
     * Enhancements
