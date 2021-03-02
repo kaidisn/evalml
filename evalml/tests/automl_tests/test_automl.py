@@ -2360,3 +2360,31 @@ def test_automl_raises_deprecated_random_state_warning(X_y_multi):
         automl = AutoMLSearch(X_train=X, y_train=y, problem_type='multiclass', random_state=10)
         assert automl.random_seed == 10
         assert str(warn[0].message).startswith("Argument 'random_state' has been deprecated in favor of 'random_seed'")
+
+
+@patch('evalml.pipelines.BinaryClassificationPipeline.score')
+@patch('evalml.pipelines.BinaryClassificationPipeline.fit')
+def test_train_batch_score_batch(mock_fit, mock_score, dummy_binary_pipeline_class, X_y_binary):
+
+    def make_dummy_pipeline(index):
+        class Pipeline(dummy_binary_pipeline_class):
+            custom_name = f"Pipeline {index}"
+        return Pipeline({})
+
+    pipelines = [make_dummy_pipeline(i) for i in range(3)]
+
+    X, y = X_y_binary
+
+    mock_score.return_value = {"Log Loss Binary": 0.1}
+    automl = AutoMLSearch(X_train=X, y_train=y, problem_type="binary", max_iterations=3)
+    automl.search()
+
+    mock_fit.side_effect = [None, Exception("foo"), None]
+    fitted_pipelines = automl.train_pipelines(pipelines)
+    assert fitted_pipelines.keys() == {"Pipeline 0", "Pipeline 2"}
+
+    score_effects = [{"Log Loss Binary": 0.1}, {"Log Loss Binary": 0.2}, {"Log Loss Binary": 0.3}]
+    mock_score.side_effect = score_effects
+    expected_scores = {f"Pipeline {i}": effect for i, effect in zip(range(3), score_effects)}
+    scores = automl.score_pipelines(pipelines, X, y, ["Log Loss Binary"])
+    assert scores == expected_scores
